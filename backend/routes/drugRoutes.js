@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 const {
-    
-} = require('');
+    getDrugs,
+    addDrug
+} = require('../controllers/drugController');
+
+router.route('/').get(getDrugs).post(addDrug);
 
 module.exports = router;
