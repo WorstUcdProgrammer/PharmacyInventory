@@ -82,11 +82,54 @@ const addDrug = asyncHandler(async (req, res) => {
 // @desc    Update drug
 // @route   PUT /drug/:id
 const updateDrug = asyncHandler(async (req, res) => {
-    
-    
+    const { need } = req.body;
+
+    if (!need) {
+        res.status(400).json({ message: `quantity not specified` });
+    }
+
+    try {
+        const updatedDrug = await Drug.findByIdAndUpdate(req.params.id, { $inc: { quantity: req.body.need }}, {
+            new: true
+        })
+        if (updatedDrug) {
+            res.status(201).json({
+                _id: updatedDrug.id,
+                name: updatedDrug.name,
+                type: updatedDrug.type,
+                mgPerUnit: updatedDrug.mgPerUnit,
+                unitPerDose: updatedDrug.unitPerDose,
+                dosePerDay: updatedDrug.dosePerDay,
+                maxiDosePerDay: updatedDrug.maxiDosePerDay,
+                productionDate: updatedDrug.productionDate,
+                expirationDate: updatedDrug.expirationDate,
+                quantity: updatedDrug.quantity,
+                cost: updatedDrug.cost,
+                price: updatedDrug.price
+            });
+        } else {
+            res.status(400).json({ message: `Update Failed` });
+        }
+    } catch (err) {
+        res.status(400).json(err);
+    }
+});
+
+// @desc    Delete drug
+// @route   DELETE /drug/:id
+const deleteDrug = asyncHandler(async (req, res) => {
+    const deletedDrug = await Drug.findByIdAndDelete(req.params.id);
+
+    if (!deletedDrug) {
+        res.status(400).json({ message: `Drug does not exist` });
+    }
+
+    res.status(200).json(deletedDrug);
 });
 
 module.exports = {
     getDrugs,
-    addDrug
+    addDrug,
+    updateDrug,
+    deleteDrug
 }

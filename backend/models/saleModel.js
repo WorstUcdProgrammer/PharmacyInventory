@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const saleSchema = mongoose.Schema({
     drug: {
-        type: String,
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Drug",
         require: [true, `Please enter the id of drug`]
     },
     type: {
@@ -26,3 +27,5 @@ const saleSchema = mongoose.Schema({
         required: [true, `Please enter the quantity of the drug sold`]
     }
 });
+
+module.exports = mongoose.model('Sale', saleSchema);

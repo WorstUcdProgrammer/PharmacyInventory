@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const historySchema = mongoose.Schema({
     drug: {
-        type: String,
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Drug",
         require: [true, `Please enter the id of drug`]
     },
     type: {
@@ -30,3 +31,5 @@ const historySchema = mongoose.Schema({
         required: [true, `Please enter the date of the sale`]
     }
 });
+
+module.exports = mongoose.model('History', historySchema);
