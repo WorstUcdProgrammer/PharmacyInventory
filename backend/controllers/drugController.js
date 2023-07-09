@@ -113,7 +113,10 @@ const updateDrug = asyncHandler(async (req, res) => {
     }
 
     try {
-        const updatedDrug = await Drug.findByIdAndUpdate(req.params.id, { $inc: { quantity: req.body.need }}, {
+        const updatedDrug = await Drug.findOneAndUpdate({
+            _id: req.params.id,
+            quantity: { $gte: Math.abs(need) }
+        }, { $inc: { quantity: req.body.need }}, {
             new: true
         });
         if (updatedDrug) {
