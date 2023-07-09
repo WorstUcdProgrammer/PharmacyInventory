@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv').config();
+const { errorHandler } = require('./middleware/errorMiddleware');
 const connectDB = require('./config/db');
 const port = process.env.PORT || 5000;
 
@@ -16,6 +17,8 @@ app.use('/drug', require('./routes/drugRoutes'));
 app.use('/history', require('./routes/historyRoutes'));
 app.use('/sale', require('./routes/saleRoutes'));
 app.use('/patient', require('./routes/patientRoutes'));
+
+app.use(errorHandler);
 
 // connect to port
 app.listen(port, () => console.log(`Server started on port ${port}`));

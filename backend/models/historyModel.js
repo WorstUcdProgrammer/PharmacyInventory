@@ -37,7 +37,7 @@ const historySchema = mongoose.Schema({
     },
     time: {
         type: Date,
-        required: [true, `Please enter the date of the sale`]
+        default: () => Date.now()
     }
 });
 
