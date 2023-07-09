@@ -8,10 +8,34 @@ const getDrugs = asyncHandler(async (req, res) => {
     res.status(200).json(drugs);
 });
 
+// @desc    Get drug
+// @route   Get /drug/:id
+const getDrug = asyncHandler(async (req, res) => {
+    const drug = await Drug.findById(req.params.id);
+
+    if (!drug) {
+        res.status(400).json({ message : `Drug not found`});
+    }
+
+    res.status(200).json({
+        _id: drug.id,
+        name: drug.name,
+        type: drug.type,
+        mgPerUnit: drug.mgPerUnit,
+        unitPerDose: drug.unitPerDose,
+        dosePerDay: drug.dosePerDay,
+        maxiDosePerDay: drug.maxiDosePerDay,
+        productionDate: drug.productionDate,
+        expirationDate: drug.expirationDate,
+        quantity: drug.quantity,
+        cost: drug.cost,
+        price: drug.price
+    });
+});
+
 // @desc    Add drug
 // @route   POST /drug
 const addDrug = asyncHandler(async (req, res) => {
-
     // get data from request body
     const {
         name,
@@ -91,7 +115,7 @@ const updateDrug = asyncHandler(async (req, res) => {
     try {
         const updatedDrug = await Drug.findByIdAndUpdate(req.params.id, { $inc: { quantity: req.body.need }}, {
             new: true
-        })
+        });
         if (updatedDrug) {
             res.status(201).json({
                 _id: updatedDrug.id,
@@ -129,6 +153,7 @@ const deleteDrug = asyncHandler(async (req, res) => {
 
 module.exports = {
     getDrugs,
+    getDrug,
     addDrug,
     updateDrug,
     deleteDrug
