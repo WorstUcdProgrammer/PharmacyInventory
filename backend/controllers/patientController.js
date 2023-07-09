@@ -14,7 +14,7 @@ const getPatient = asyncHandler(async (req, res) => {
     const patient = await Patient.findById(req.params.id);
 
     if (!patient) {
-        res.status(400).json({ message : `Patient not found`});
+        throw new Error(`Patient not found`);
     }
 
     res.status(200).json({
@@ -30,7 +30,7 @@ const addPatient = asyncHandler(async (req, res) => {
     const { name, number } = req.body;
 
     if (!name || !number) {
-        res.status(400).json({ message: `Please add all fields` });
+        throw new Error(`Please add all fields`);
     }
 
     const patient = await Patient.create({
@@ -55,7 +55,7 @@ const updatePatient = asyncHandler(async (req, res) => {
     const { name, number } = req.body;
 
     if (!name || !number) {
-        res.status(400).json({ message: `Please add all fields` });
+        throw new Error(`Please add all fields`);
     }
 
     const updatedPatient = await Patient.findByIdAndUpdate(req.params.id, {
@@ -84,7 +84,7 @@ const deletePatient = asyncHandler(async (req, res) => {
     const deletedPatient = await Patient.findByIdAndDelete(req.params.id);
 
     if (!deletedPatient) {
-        res.status(400).json({ message: `Patient does not exist` });
+        throw new Error(`Patient doesn not exist`);
     }
 
     res.status(200).json(deletedPatient);

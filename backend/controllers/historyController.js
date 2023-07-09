@@ -25,7 +25,7 @@ const getHistory = asyncHandler(async (req, res) => {
     const history = await History.findById(req.params.id);
 
     if (!history) {
-        res.status(400).json({ message : `History not found`});
+        throw new Error(`History not found`);
     }
 
     res.status(200).json({
@@ -61,7 +61,7 @@ const addHistory = asyncHandler(async (req, res) => {
         !cost ||
         !price ||
         !quantity) {
-        res.status(400).json({ message: `Please add all fields` });
+        throw new Error(`Please add all fields`);
     }
 
     const patientExist = await Patient.findById(patient);
@@ -123,7 +123,7 @@ const updateHistory = asyncHandler(async (req, res) => {
         !cost ||
         !price ||
         !quantity) {
-        res.status(400).json({ message: `Please add all fields` });
+        throw new Error(`Please add all fields`);
     }
 
     const updatedHistory = await History.findByIdAndUpdate(req.params.id, {
@@ -163,7 +163,7 @@ const deleteHistory = asyncHandler(async (req, res) => {
     const deletedHistory = await History.findByIdAndDelete(req.params.id);
 
     if (!deletedHistory) {
-        res.status(400).json({ message: `History does not exist` });
+        throw new Error(`History does not exist`);
     }
 
     res.status(200).json(deletedHistory);

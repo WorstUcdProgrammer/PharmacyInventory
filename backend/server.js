@@ -18,6 +18,7 @@ app.use('/history', require('./routes/historyRoutes'));
 app.use('/sale', require('./routes/saleRoutes'));
 app.use('/patient', require('./routes/patientRoutes'));
 
+// middleware
 app.use(errorHandler);
 
 // connect to port

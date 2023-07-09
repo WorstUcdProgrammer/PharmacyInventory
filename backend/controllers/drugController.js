@@ -14,7 +14,7 @@ const getDrug = asyncHandler(async (req, res) => {
     const drug = await Drug.findById(req.params.id);
 
     if (!drug) {
-        res.status(400).json({ message : `Drug not found`});
+        throw new Error(`Drug not found`);
     }
 
     res.status(200).json({
@@ -63,7 +63,7 @@ const addDrug = asyncHandler(async (req, res) => {
         !quantity ||
         !cost ||
         !price) {
-            res.status(400).json({ message: `Please add all fields` })
+            throw new Error(`Please add all fields`);
         }
     
     // create a new entry in database
@@ -109,7 +109,7 @@ const updateDrug = asyncHandler(async (req, res) => {
     const { need } = req.body;
 
     if (!need) {
-        res.status(400).json({ message: `quantity not specified` });
+        throw new Error(`Quantity not specified`);
     }
 
     try {
@@ -148,7 +148,7 @@ const deleteDrug = asyncHandler(async (req, res) => {
     const deletedDrug = await Drug.findByIdAndDelete(req.params.id);
 
     if (!deletedDrug) {
-        res.status(400).json({ message: `Drug does not exist` });
+        throw new Error(`Drug does not exist`);
     }
 
     res.status(200).json(deletedDrug);
