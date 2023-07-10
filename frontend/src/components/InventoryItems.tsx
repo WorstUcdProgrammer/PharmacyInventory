@@ -17,25 +17,151 @@ interface InventoryItem {
 
 interface InventoryItemsProps {
   items: InventoryItem[];
+  refreshPage: () => Promise<void>;
 }
 
-const InventoryItems: React.FC<InventoryItemsProps> = ({ items }) => {
+interface FormData {
+  name: string | null;
+  type: string | null;
+  mgPerUnit: number | null;
+  unitPerDose: number | null;
+  dosePerDay: number | null;
+  maxiDosePerDay: number | null;
+  productionDate: string | null;
+  expirationDate: string | null;
+  quantity: number | null;
+  cost: number | null;
+  price: number | null;
+}
+
+const InventoryItems: React.FC<InventoryItemsProps> = ({
+  items,
+  refreshPage,
+}) => {
+  /* The state to control the overlays */
   const [showDeleteOverlay, setShowDeleteOverlay] = useState(false);
   const [showOrderOverlay, setShowOrderOverlay] = useState(false);
+  const [showAddOverlay, setShowAddOverlay] = useState(false);
+  /* Corresponding variable for overlay fields */
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
   const [orderItemId, setOrderItemId] = useState<string | null>(null);
   const [orderQuantity, setOrderQuantity] = useState<string | null>(null);
   const [patientId, setPatientId] = useState<string | null>(null);
   const [maxOrder, setMaxOrder] = useState<string>("");
+  const [formData, setFormData] = useState<FormData>({
+    name: null,
+    type: null,
+    mgPerUnit: null,
+    unitPerDose: null,
+    dosePerDay: null,
+    maxiDosePerDay: null,
+    productionDate: null,
+    expirationDate: null,
+    quantity: null,
+    cost: null,
+    price: null,
+  });
+
+  /* Functions to handle add a new drug to inventory */
+
+  const handleAddClick = () => {
+    setShowAddOverlay(true);
+  };
+
+  const handleConfirmAdd = async () => {
+    if (
+      formData.name &&
+      formData.type &&
+      formData.mgPerUnit &&
+      formData.unitPerDose &&
+      formData.dosePerDay &&
+      formData.maxiDosePerDay &&
+      formData.productionDate &&
+      formData.expirationDate &&
+      formData.quantity &&
+      formData.cost &&
+      formData.price &&
+      formData.productionDate < formData.expirationDate
+    ) {
+      try {
+        const response = await fetch("http://localhost:5000/drug/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+        if (response.ok) {
+          await refreshPage();
+          console.log("Success");
+        } else {
+          console.error("Failed to order");
+        }
+      } catch (error) {
+        console.error("An error occured", error);
+      }
+    }
+    setFormData({
+      name: null,
+      type: null,
+      mgPerUnit: null,
+      unitPerDose: null,
+      dosePerDay: null,
+      maxiDosePerDay: null,
+      productionDate: null,
+      expirationDate: null,
+      quantity: null,
+      cost: null,
+      price: null,
+    });
+    setShowAddOverlay(false);
+  };
+
+  const handleCancleAdd = () => {
+    setFormData({
+      name: null,
+      type: null,
+      mgPerUnit: null,
+      unitPerDose: null,
+      dosePerDay: null,
+      maxiDosePerDay: null,
+      productionDate: null,
+      expirationDate: null,
+      quantity: null,
+      cost: null,
+      price: null,
+    });
+    setShowAddOverlay(false);
+  };
+
+  /* Functions to handle delete a drug from inventory */
 
   const handleDeleteClick = (id: string) => {
     setDeleteItemId(id);
     setShowDeleteOverlay(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (deleteItemId) {
-      // delete here
+      try {
+        const response = await fetch(
+          "http://localhost:5000/drug/" + deleteItemId,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (response.ok) {
+          await refreshPage();
+          console.log("Success");
+        } else {
+          console.error("Failed to delete");
+        }
+      } catch (error) {
+        console.error("An error occured", error);
+      }
     }
     setShowDeleteOverlay(false);
     setDeleteItemId(null);
@@ -46,6 +172,8 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({ items }) => {
     setDeleteItemId(null);
   };
 
+  /* Functions to handle order a drug for customer */
+
   const handleOrderClick = (id: string, num: string) => {
     setOrderItemId(id);
     setOrderQuantity(null);
@@ -53,9 +181,38 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({ items }) => {
     setMaxOrder(num);
   };
 
-  const handleConfirmOrder = () => {
-    if (orderItemId && orderQuantity) {
-      // order here
+  const parseDate = (str: string) => {
+    const byDot: string[] = str.split(".");
+    const byT: string[] = byDot[0].split("T");
+    return byT[0];
+  };
+
+  const handleConfirmOrder = async () => {
+    if (
+      orderItemId &&
+      orderQuantity &&
+      Number(orderQuantity) <= Number(maxOrder)
+    ) {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/drug/" + orderItemId,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ need: -1 * Number(orderQuantity) }),
+          }
+        );
+        if (response.ok) {
+          await refreshPage();
+          console.log("Success");
+        } else {
+          console.error("Failed to order");
+        }
+      } catch (error) {
+        console.error("An error occured", error);
+      }
     }
     setShowOrderOverlay(false);
     setOrderItemId(null);
@@ -70,6 +227,13 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({ items }) => {
     setOrderQuantity(null);
     setPatientId(null);
     setMaxOrder("");
+  };
+
+  /* Helper function to help set the form data according to user input */
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   return (
@@ -89,6 +253,14 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({ items }) => {
             <th className="text-left px-4 py-2">quantity</th>
             <th className="text-left px-4 py-2">cost</th>
             <th className="text-left px-4 py-2">price</th>
+            <th className="text-left px-12 py-2">
+              <button
+                className="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded"
+                onClick={handleAddClick}
+              >
+                Add Drug
+              </button>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -101,14 +273,18 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({ items }) => {
               <td className="border-t px-4 py-2">{item.unitPerDose}</td>
               <td className="border-t px-4 py-2">{item.dosePerDay}</td>
               <td className="border-t px-4 py-2">{item.maxiDosePerDay}</td>
-              <td className="border-t px-4 py-2">{item.productionDate}</td>
-              <td className="border-t px-4 py-2">{item.expirationDate}</td>
+              <td className="border-t px-4 py-2">
+                {parseDate(item.productionDate)}
+              </td>
+              <td className="border-t px-4 py-2">
+                {parseDate(item.expirationDate)}
+              </td>
               <td className="border-t px-4 py-2">{item.quantity}</td>
               <td className="border-t px-4 py-2">{item.cost}</td>
               <td className="border-t px-4 py-2">{item.price}</td>
               <td className="border-t px-4 py-2">
                 <button
-                  className="text-blue-500 hover:text-blue-700 mr-2"
+                  className="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white mr-2 px-4 py-2 rounded"
                   onClick={() =>
                     handleOrderClick(item._id, String(item.quantity))
                   }
@@ -116,7 +292,7 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({ items }) => {
                   Order
                 </button>
                 <button
-                  className="text-red-500 hover:text-red-700"
+                  className="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white mr-2 px-4 py-2 rounded"
                   onClick={() => handleDeleteClick(item._id)}
                 >
                   Delete
@@ -133,13 +309,13 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({ items }) => {
             <p className="mb-4">Are you sure you want to delete this drug?</p>
             <div className="flex justify-end">
               <button
-                className="bg-red-500 text-white px-4 py-2 rounded mr-2"
+                className="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded mr-2"
                 onClick={handleConfirmDelete}
               >
                 Confirm
               </button>
               <button
-                className="bg-gray-500 text-white px-4 py-2 rounded"
+                className="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded"
                 onClick={handleCancelDelete}
               >
                 Cancel
@@ -180,14 +356,158 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({ items }) => {
             </div>
             <div className="flex justify-end">
               <button
-                className="bg-red-500 text-white px-4 py-2 rounded mr-2"
+                className="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded mr-2"
                 onClick={handleConfirmOrder}
               >
                 Confirm
               </button>
               <button
-                className="bg-gray-500 text-white px-4 py-2 rounded"
+                className="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded"
                 onClick={handleCancelOrder}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showAddOverlay && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">
+              Add Drug to Inventory
+            </h3>
+            <div className="flex mb-4">
+              <div className="mr-4">
+                <label className="block text-gray-700">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name || ""}
+                  onChange={handleInputChange}
+                  className="border border-gray-400 rounded px-3 py-2 mt-1 w-full"
+                />
+              </div>
+              <div className="mr-4">
+                <label className="block text-gray-700">Type</label>
+                <input
+                  type="text"
+                  name="type"
+                  value={formData.type || ""}
+                  onChange={handleInputChange}
+                  className="border border-gray-400 rounded px-3 py-2 mt-1 w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700">mgPerUnity</label>
+                <input
+                  type="number"
+                  name="mgPerUnit"
+                  value={formData.mgPerUnit || 0}
+                  onChange={handleInputChange}
+                  className="border border-gray-400 rounded px-3 py-2 mt-1 w-full"
+                />
+              </div>
+            </div>
+            <div className="flex mb-4">
+              <div className="mr-4">
+                <label className="block text-gray-700">unitPerDose</label>
+                <input
+                  type="number"
+                  name="unitPerDose"
+                  value={formData.unitPerDose || 0}
+                  onChange={handleInputChange}
+                  className="border border-gray-400 rounded px-3 py-2 mt-1 w-full"
+                />
+              </div>
+              <div className="mr-4">
+                <label className="block text-gray-700">dosePerDay</label>
+                <input
+                  type="number"
+                  name="dosePerDay"
+                  value={formData.dosePerDay || 0}
+                  onChange={handleInputChange}
+                  className="border border-gray-400 rounded px-3 py-2 mt-1 w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700">maxiDosePerDay</label>
+                <input
+                  type="number"
+                  name="maxiDosePerDay"
+                  value={formData.maxiDosePerDay || 0}
+                  onChange={handleInputChange}
+                  className="border border-gray-400 rounded px-3 py-2 mt-1 w-full"
+                />
+              </div>
+            </div>
+            <div className="flex mb-4">
+              <div className="mr-4">
+                <label className="block text-gray-700">productionDate</label>
+                <input
+                  type="date"
+                  name="productionDate"
+                  value={formData.productionDate || ""}
+                  onChange={handleInputChange}
+                  className="border border-gray-400 rounded px-3 py-2 mt-1 w-full"
+                />
+              </div>
+              <div className="mr-4">
+                <label className="block text-gray-700">expirationDate</label>
+                <input
+                  type="date"
+                  name="expirationDate"
+                  value={formData.expirationDate || ""}
+                  onChange={handleInputChange}
+                  className="border border-gray-400 rounded px-3 py-2 mt-1 w-full"
+                  min={formData.productionDate ? formData.productionDate : ""}
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700">quantity</label>
+                <input
+                  type="number"
+                  name="quantity"
+                  value={formData.quantity || 0}
+                  onChange={handleInputChange}
+                  className="border border-gray-400 rounded px-3 py-2 mt-1 w-full"
+                />
+              </div>
+            </div>
+            <div className="flex mb-4">
+              <div className="mr-4">
+                <label className="block text-gray-700">cost</label>
+                <input
+                  type="number"
+                  name="cost"
+                  value={formData.cost || 0}
+                  onChange={handleInputChange}
+                  className="border border-gray-400 rounded px-3 py-2 mt-1 w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700">price</label>
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price || 0}
+                  onChange={handleInputChange}
+                  className="border border-gray-400 rounded px-3 py-2 mt-1 w-full"
+                  min={formData.productionDate ? formData.productionDate : ""}
+                />
+              </div>
+            </div>
+            {/* Add more input fields for additional fields */}
+            <div className="flex justify-end">
+              <button
+                className="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded mr-2"
+                onClick={handleConfirmAdd}
+              >
+                Submit
+              </button>
+              <button
+                className="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded"
+                onClick={handleCancleAdd}
               >
                 Cancel
               </button>

@@ -44,9 +44,19 @@ const Inventory: React.FC = () => {
     setCurrentPage(page);
   };
 
+  const refreshPage = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/drug");
+      const data = await response.json();
+      setItems(data);
+    } catch (error) {
+      console.error("Error fetching inventory items:", error);
+    }
+  };
+
   return (
     <div className="bg-gray-800 p-4">
-      <InventoryItems items={currentItems} />
+      <InventoryItems items={currentItems} refreshPage={refreshPage} />
       <div className="mt-4 flex justify-center">
         {Array.from({ length: totalPages }, (_, index) => (
           <button
