@@ -174,11 +174,24 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({
 
   /* Functions to handle order a drug for customer */
 
-  const handleOrderClick = (id: string, num: string) => {
-    setOrderItemId(id);
+  const handleOrderClick = (item: InventoryItem) => {
+    setOrderItemId(item._id);
     setOrderQuantity(null);
     setShowOrderOverlay(true);
-    setMaxOrder(num);
+    setMaxOrder(String(item.quantity));
+    setFormData({
+      name: item.name,
+      type: item.type,
+      mgPerUnit: item.mgPerUnit,
+      unitPerDose: item.unitPerDose,
+      dosePerDay: item.dosePerDay,
+      maxiDosePerDay: item.maxiDosePerDay,
+      productionDate: item.productionDate,
+      expirationDate: item.expirationDate,
+      quantity: item.quantity,
+      cost: item.cost,
+      price: item.price,
+    });
   };
 
   const parseDate = (str: string) => {
@@ -194,21 +207,41 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({
       Number(orderQuantity) <= Number(maxOrder)
     ) {
       try {
-        const response = await fetch(
-          "http://localhost:5000/drug/" + orderItemId,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ need: -1 * Number(orderQuantity) }),
+        let response1 = await fetch("http://localhost:5000/history", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            patient: patientId,
+            drug: orderItemId,
+            type: formData.type,
+            mgPerUnit: formData.mgPerUnit,
+            cost: formData.cost,
+            price: formData.price,
+            quantity: orderQuantity,
+          }),
+        });
+        if (response1.status === 201) {
+          console.log(response1.json());
+          let response2 = await fetch(
+            "http://localhost:5000/drug/" + orderItemId,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ need: -1 * Number(orderQuantity) }),
+            }
+          );
+          if (response2.ok) {
+            await refreshPage();
+            console.log("Success on order");
+          } else {
+            console.error("Failed to order");
           }
-        );
-        if (response.ok) {
-          await refreshPage();
-          console.log("Success");
         } else {
-          console.error("Failed to order");
+          console.error("Failed to add history");
         }
       } catch (error) {
         console.error("An error occured", error);
@@ -219,6 +252,19 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({
     setOrderQuantity(null);
     setPatientId(null);
     setMaxOrder("");
+    setFormData({
+      name: null,
+      type: null,
+      mgPerUnit: null,
+      unitPerDose: null,
+      dosePerDay: null,
+      maxiDosePerDay: null,
+      productionDate: null,
+      expirationDate: null,
+      quantity: null,
+      cost: null,
+      price: null,
+    });
   };
 
   const handleCancelOrder = () => {
@@ -227,6 +273,19 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({
     setOrderQuantity(null);
     setPatientId(null);
     setMaxOrder("");
+    setFormData({
+      name: null,
+      type: null,
+      mgPerUnit: null,
+      unitPerDose: null,
+      dosePerDay: null,
+      maxiDosePerDay: null,
+      productionDate: null,
+      expirationDate: null,
+      quantity: null,
+      cost: null,
+      price: null,
+    });
   };
 
   /* Helper function to help set the form data according to user input */
@@ -285,9 +344,7 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({
               <td className="border-t px-4 py-2">
                 <button
                   className="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white mr-2 px-4 py-2 rounded"
-                  onClick={() =>
-                    handleOrderClick(item._id, String(item.quantity))
-                  }
+                  onClick={() => handleOrderClick(item)}
                 >
                   Order
                 </button>
@@ -497,7 +554,6 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({
                 />
               </div>
             </div>
-            {/* Add more input fields for additional fields */}
             <div className="flex justify-end">
               <button
                 className="bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white px-4 py-2 rounded mr-2"

@@ -20,7 +20,7 @@ const Inventory: React.FC = () => {
         const data = await response.json();
         setItems(data);
       } catch (error) {
-        console.error("Error fetching inventory items:", error);
+        console.error("Error fetching patient info:", error);
       }
     };
     fetchPatientItems();
@@ -41,7 +41,7 @@ const Inventory: React.FC = () => {
       const data = await response.json();
       setItems(data);
     } catch (error) {
-      console.error("Error fetching inventory items:", error);
+      console.error("Error fetching patient info:", error);
     }
   };
 
