@@ -25,7 +25,6 @@ Run
 #### `frontend` - Holds the client application
 - #### `public` - This holds all of static files
 - #### `src`
-    - #### `assets` - This folder holds assets such as images, docs, and fonts
     - #### `components` - This folder holds all of the different components that will make up views
     - #### `views` - These represent a unique page on the website i.e. Home or About. These are still normal react components.
     - #### `App.js` - This is what renders all of our browser routes and different views
