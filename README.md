@@ -26,7 +26,7 @@ Run
 - #### `public` - This holds all of static files
 - #### `src`
     - #### `components` - This folder holds all of the different components that will make up views
-    - #### `views` - These represent a unique page on the website i.e. Home or About. These are still normal react components.
+    - #### `views` - These represent a unique page on the website i.e. Inventory or Patient. These are still normal react components.
     - #### `App.js` - This is what renders all of our browser routes and different views
     - #### `index.js` - This is what renders the react app by rendering App.js, should not change
 - #### `package.json` - Defines npm behaviors and packages for the client
