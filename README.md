@@ -56,6 +56,14 @@ In the backend directory, you can run:
 
 Runs the server app in development mode.<br>
 
+## TODO
+
+### In Progress
+
+- [ ] Implementing the Overview page to visualize inventory/logging/summary by charts/graphs
+- [ ] Move backend to other frameworks: .Net Entity Framework
+
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
