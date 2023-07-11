@@ -1,29 +1,38 @@
 import React, { useEffect, useState } from "react";
-import PatientInfo from "./PatientInfo";
+import InventoryItems from "../components/InventoryItems";
 
-interface PatientItems {
+interface InventoryItem {
   _id: string;
   name: string;
-  number: string;
+  type: string;
+  mgPerUnit: number;
+  unitPerDose: number;
+  dosePerDay: number;
+  maxiDosePerDay: number;
+  productionDate: string;
+  expirationDate: string;
+  quantity: number;
+  cost: number;
+  price: number;
 }
 
 const ITEMS_PER_PAGE = 10;
 
 const Inventory: React.FC = () => {
-  const [items, setItems] = useState<PatientItems[]>([]);
+  const [items, setItems] = useState<InventoryItem[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   useEffect(() => {
-    const fetchPatientItems = async () => {
+    const fetchInventoryItems = async () => {
       try {
-        const response = await fetch("http://localhost:5000/patient");
+        const response = await fetch("http://localhost:5000/drug");
         const data = await response.json();
         setItems(data);
       } catch (error) {
-        console.error("Error fetching patient info:", error);
+        console.error("Error fetching inventory items:", error);
       }
     };
-    fetchPatientItems();
+    fetchInventoryItems();
   }, []);
 
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
@@ -37,17 +46,17 @@ const Inventory: React.FC = () => {
 
   const refreshPage = async () => {
     try {
-      const response = await fetch("http://localhost:5000/patient");
+      const response = await fetch("http://localhost:5000/drug");
       const data = await response.json();
       setItems(data);
     } catch (error) {
-      console.error("Error fetching patient info:", error);
+      console.error("Error fetching inventory items:", error);
     }
   };
 
   return (
     <div className="bg-gray-800 p-4">
-      <PatientInfo items={currentItems} refreshPage={refreshPage} />
+      <InventoryItems items={currentItems} refreshPage={refreshPage} />
       <div className="mt-4 flex justify-center">
         {Array.from({ length: totalPages }, (_, index) => (
           <button

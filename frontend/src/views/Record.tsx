@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import RecordItems from "./RecordItems";
+import RecordItems from "../components/RecordItems";
 
 interface RecordItem {
   _id: string;
