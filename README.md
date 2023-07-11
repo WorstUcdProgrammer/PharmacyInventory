@@ -33,6 +33,7 @@ Run
 #### `backend` - Holds the server application
 - #### `config` - This holds configuration files, like mongoDB uri
 - #### `controllers` - These hold all of the callback functions that each route will call
+- #### `middleware` - This hold helper function for custom error handling
 - #### `models` - This holds all of our data models
 - #### `routes` - This holds all of our HTTP to URL path associations for each unique url
 - #### `server.js` - Defines npm behaviors and packages for the client
