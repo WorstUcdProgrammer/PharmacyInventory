@@ -62,6 +62,7 @@ Runs the server app in development mode.<br>
 
 - [ ] Implementing the Overview page to visualize inventory/logging/summary by charts/graphs
 - [ ] Move backend to other frameworks: .Net Entity Framework
+- [ ] Use React Native to deploy on android devices
 
 ### Done ✓
 
