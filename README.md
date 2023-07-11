@@ -63,6 +63,13 @@ Runs the server app in development mode.<br>
 - [ ] Implementing the Overview page to visualize inventory/logging/summary by charts/graphs
 - [ ] Move backend to other frameworks: .Net Entity Framework
 
+### Done ✓
+
+- [x] Backend CRUD on Drug Inventory, Patient Info, Order details
+- [x] Frontend pages of Inventory, Patient Info, Order details
+- [x] Full Frontend interaction with Backend CRUD operations
+- [x] Rerender page when database changed
+
 
 ## Learn More
 
