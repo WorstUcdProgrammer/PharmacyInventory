@@ -68,7 +68,7 @@ Runs the server app in development mode.<br>
 
 - [ ] Implementing the Overview page to visualize inventory/logging/summary by charts/graphs
 - [ ] Move backend to other frameworks: .Net Entity Framework
-- [ ] Use React Native to deploy on android devices
+- [ ] Deploy on android devices
 - [ ] Utilize a barcode scanning library to detect barcode in real time video stream
 
 ### Done ✓
