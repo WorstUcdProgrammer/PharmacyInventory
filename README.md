@@ -78,6 +78,7 @@ Runs the server app in development mode.<br>
 - [x] Full Frontend interaction with Backend CRUD operations
 - [x] Rerender page when database changed
 - [x] Ask for user permission to camera for real time scanning
+- [x] Generate barcode for printing when click the drug's inventory id
 
 ## Learn More
 

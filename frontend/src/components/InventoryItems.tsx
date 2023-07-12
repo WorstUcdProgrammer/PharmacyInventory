@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import BarCodeGen from "./BarCodeGen";
 
 interface InventoryItem {
   _id: string;
@@ -295,6 +296,19 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
+  const [imageURL, setImageURL] = useState("");
+
+  const openOverlay = (id: string) => {
+    setIsOverlayOpen(true);
+    setImageURL("https://barcodeapi.org/api/128/" + id);
+  };
+
+  const closeOverlay = () => {
+    setIsOverlayOpen(false);
+    setImageURL("");
+  };
+
   return (
     <div className="relative">
       <table className="min-w-full bg-white">
@@ -325,7 +339,14 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({
         <tbody>
           {items.map((item) => (
             <tr key={item._id}>
-              <td className="border-t px-4 py-2">{item._id}</td>
+              <td
+                className="border-t px-4 py-2 cursor-pointer"
+                onClick={() => {
+                  openOverlay(item._id);
+                }}
+              >
+                {item._id}
+              </td>
               <td className="border-t px-4 py-2">{item.name}</td>
               <td className="border-t px-4 py-2">{item.type}</td>
               <td className="border-t px-4 py-2">{item.mgPerUnit}</td>
@@ -570,6 +591,9 @@ const InventoryItems: React.FC<InventoryItemsProps> = ({
             </div>
           </div>
         </div>
+      )}
+      {isOverlayOpen && (
+        <BarCodeGen url={imageURL} closeOverlay={closeOverlay} />
       )}
     </div>
   );
