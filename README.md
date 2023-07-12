@@ -1,9 +1,11 @@
 # Pharmacy Inventory
 
-#### _**IMPORTANT NOTE**_ - 
+#### _**IMPORTANT NOTE**_ -
+
 This app does not contain an .env file, you need to create one yourself in the backend directory and plug in mongodb uri into it to run the backend server.
 
 ## Getting Started
+
 To get the dependencies for frontend
 
 Run
@@ -20,26 +22,30 @@ Run
 
 `$ npm install`
 
-
 ## File structure
+
 #### `frontend` - Holds the client application
+
 - #### `public` - This holds all of static files
 - #### `src`
-    - #### `components` - This folder holds all of the different components that will make up views
-    - #### `views` - These represent a unique page on the website i.e. Inventory or Patient. These are still normal react components.
-    - #### `App.js` - This is what renders all of our browser routes and different views
-    - #### `index.js` - This is what renders the react app by rendering App.js, should not change
+  - #### `components` - This folder holds all of the different components that will make up views
+  - #### `views` - These represent a unique page on the website i.e. Inventory or Patient. These are still normal react components.
+  - #### `App.js` - This is what renders all of our browser routes and different views
+  - #### `index.js` - This is what renders the react app by rendering App.js, should not change
 - #### `package.json` - Defines npm behaviors and packages for the client
+
 #### `backend` - Holds the server application
+
 - #### `config` - This holds configuration files, like mongoDB uri
 - #### `controllers` - These hold all of the callback functions that each route will call
 - #### `middleware` - This hold helper function for custom error handling
 - #### `models` - This holds all of our data models
 - #### `routes` - This holds all of our HTTP to URL path associations for each unique url
 - #### `server.js` - Defines npm behaviors and packages for the client
-#### `package.json` - Defines npm behaviors like the scripts defined in the next section of the README
-#### `.gitignore` - Tells git which files to ignore
 
+#### `package.json` - Defines npm behaviors like the scripts defined in the next section of the README
+
+#### `.gitignore` - Tells git which files to ignore
 
 ## Available Scripts
 
@@ -63,6 +69,7 @@ Runs the server app in development mode.<br>
 - [ ] Implementing the Overview page to visualize inventory/logging/summary by charts/graphs
 - [ ] Move backend to other frameworks: .Net Entity Framework
 - [ ] Use React Native to deploy on android devices
+- [ ] Utilize a barcode scanning library to detect barcode in real time video stream
 
 ### Done ✓
 
@@ -70,7 +77,7 @@ Runs the server app in development mode.<br>
 - [x] Frontend pages of Inventory, Patient Info, Order details
 - [x] Full Frontend interaction with Backend CRUD operations
 - [x] Rerender page when database changed
-
+- [x] Ask for user permission to camera for real time scanning
 
 ## Learn More
 
